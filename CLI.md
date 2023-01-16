@@ -169,7 +169,6 @@ To complement setting up a sandbox envrionmebt the --host flag , the --non-inter
 
 If using a NEOS sandbox it is possible to initialise the all the API's to that single sandbox using the '--non-interactive' switch which will use a set of defaults based on the value passed in by the '--host' flag 
 
-
 #### Example creating a sandbox profile  
 
 ```bash
@@ -178,7 +177,7 @@ neosctl --profile test profile init --host somecore.neosdata.net --non-interacti
 
 ### delete 
 
-It is possible to delete a profile using the delete subcommand 
+To delete a profile using the delete subcommand 
 
 ```bash
 neosctl --profile <name> profile delete 
@@ -186,20 +185,122 @@ neosctl --profile <name> profile delete
 
 ### list 
 
+list all the available profiles. 
+
+
+```bash 
+neosctl profile list 
+```
+
 ### view 
+
+To view the contents of a named profile 
+
+```bash
+neosctl --profile <name> profile view  
+```
+
+### Profile file details 
+
+The default location of the profile file is in the users default home directory with a filename of .neosctl 
+
+each named profile is a json object similar to below.  
+
+```json
+  "access_token": "",
+  "gateway_api_url": "https://some-core.neosdata.net/api/gateway",
+  "iam_api_url": "https://iam.neosdata.net/api/iam",
+  "ignore_tls": "False",
+  "refresh_token": "",
+  "registry_api_url": "https://registry.neosdata.net/api/registry",
+  "storage_api_url": "https://some-core.neosdata.net/api/storage",
+  "user": "some-user"
+```
+
+"access_token" - contains a JWT used to authenticate with the API's this is populated when successfully logged into NEOS
+"gateway_api_url" - contains the URI of the gateway API 
+"iam_api_url" - contains the URI of the IAM API 
+"ignore_tls": "False" - defines if TLS should be ignored 
+"refresh_token": "" - refresh token for refreshing against the IAM service with a new access token 
+"registry_api_url" - contains the URI of the registry API 
+"storage_api_url" - contains the URI of the storage API 
+"user": - contains the username of the user of the 
 
 
 ## auth 
 
+The auth subcommand is used to login to neos using a profile. It uses the IAM api to facilitate authenticating and obtaining a time limited authentication token. The authentication token lasts for <TODO> 10 minutes before it will require refreshing 
+
+(we should add refresh as an option on the CLI)
+
 ### login 
+
+The login subcommand authenticates and populates the profiles access token for the referenced profile user, if no password flag is supplied, then there will be a prompt for a password  
+
+```bash
+neosctl --profile <name> auth login  
+```
+The --password flag enables passing in a password from the commandline without prompting. 
 
 ### logout 
 
+The logout subcommand removes the access token and the refresh token for the defined profile.   
 
+```bash
+neosctl --profile <name> auth logout  
+```
 
 ## consume 
 
+The consume subcommand is used to enable quick and easy commandline access to consumption of published data products using a query in trino format SQL. <TODO - link to trino , or more on this > 
+
+
+### query 
+
+The query subcommand enables sending a trino sql like query to get the contents of a data product 
+
+```bash
+neosctl --profile <name> consume query 'sql statement'  
+```
+
+#### query example
+
+This is an example of consuming 10 rows of data in the data product called 'worker' which is in the postgres engine.  
+
+```bash 
+neosctl --profile some-user consume query 'select * from postgres.neos.worker limit 10'
+```
+
+<TODO - check the above sql is correct>
+
 ## iam 
+
+The iam subcommand enables interacting with the neos IAM API. 
+
+### create 
+
+The create subcomand is used to upload a new user IAM policy json file. 
+
+```bash
+neosctl --profile <name> iam create <file path> 
+```
+
+### delete  
+
+The delete subcommand is used to delete a user IAM policy using the neos users NRN (Neos Nesource Name), the URN is a required argument
+
+```bash
+neosctl --profile <name> iam delete <urn>
+```
+
+
+### get 
+
+### list 
+
+### update 
+
+
 
 ## metadata 
 
